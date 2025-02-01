@@ -181,7 +181,7 @@ from ultralytics import YOLO
 from .models import Notification
 from django.core.files.storage import default_storage
 from django.utils import timezone
-
+import threading
 # Path to the YOLO model
 MODEL_PATH = os.path.join('../weapon_detection', 'runs', 'detect', 'train', 'weights', 'last.pt')
 
@@ -190,62 +190,63 @@ MODEL_PATH = os.path.join('../weapon_detection', 'runs', 'detect', 'train', 'wei
 
 class WeaponDetectionAPI(APIView):
     def get(self, request):
-        # Initialize webcam capture
-        cap = cv2.VideoCapture(0)
+        def detect_weapons():
+            # Initialize webcam capture
+            cap = cv2.VideoCapture(0)
 
-        # Load the YOLO model
-        # model_path = os.path.join('path_to_your_model', 'last.pt')
-        model = YOLO("//home//sharafu//Desktop//djangoprojects//weapondetection//weopon-detection//last.pt")
+            # Load the YOLO model
+            model = YOLO("/home/sharafu/Desktop/djangoprojects/weapondetection/weopon-detection/last.pt")
 
-        # Detection threshold
-        threshold = 0.5
+            # Detection threshold
+            threshold = 0.5
 
-        while True:
-            # Capture frame-by-frame
-            ret, frame = cap.read()
-            if not ret:
-                break
+            while True:
+                # Capture frame-by-frame
+                ret, frame = cap.read()
+                if not ret:
+                    break
 
-            # Perform detection
-            results = model(frame)[0]
+                # Perform detection
+                results = model(frame)[0]
 
-            for result in results.boxes.data.tolist():
-                x1, y1, x2, y2, score, class_id = result
+                for result in results.boxes.data.tolist():
+                    x1, y1, x2, y2, score, class_id = result
 
-                if score > threshold:
-                    # Draw bounding box and label
-                    cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
-                    label = results.names[int(class_id)].upper()
-                    cv2.putText(frame, label, (int(x1), int(y1) - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                    if score > threshold:
+                        # Draw bounding box and label
+                        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+                        label = results.names[int(class_id)].upper()
+                        cv2.putText(frame, label, (int(x1), int(y1) - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
-                    # Save the detected frame as an image
-                    _, img_encoded = cv2.imencode('.jpg', frame)
-                    img_bytes = img_encoded.tobytes()
-                    image_name = f"detection_{timezone.now().strftime('%Y%m%d_%H%M%S')}.jpg"
+                        # Save the detected frame as an image
+                        _, img_encoded = cv2.imencode('.jpg', frame)
+                        img_bytes = img_encoded.tobytes()
+                        image_name = f"detection_{timezone.now().strftime('%Y%m%d_%H%M%S')}.jpg"
 
-                    # Create Notification instance
-                    notification = Notification(
-                        message=f"{label} detected",
-                        detected_at=timezone.now()
-                    )
-                    notification.image.save(image_name, ContentFile(img_bytes), save=True)
+                        # Create Notification instance
+                        notification = Notification(
+                            message=f"{label} detected",
+                            detected_at=timezone.now()
+                        )
+                        notification.image.save(image_name, ContentFile(img_bytes), save=True)
 
-            # Display the resulting frame
-            cv2.imshow('Live Detection', frame)
+                # Display the resulting frame
+                cv2.imshow('Live Detection', frame)
 
-            # Break the loop if 'q' is pressed
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+                # Break the loop if 'q' is pressed
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
 
-        # Release the capture and close windows
-        cap.release()
-        cv2.destroyAllWindows()
+            # Release the capture and close windows
+            cap.release()
+            cv2.destroyAllWindows()
 
-        # Retrieve all notifications
-        notifications = Notification.objects.all()
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Start the weapon detection in a separate thread
+        detection_thread = threading.Thread(target=detect_weapons)
+        detection_thread.start()
+
+        return Response({"message": "Camera started successfully"}, status=status.HTTP_200_OK)
 # views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
