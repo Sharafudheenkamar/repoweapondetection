@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Table</title>
+    
+    <link rel="stylesheet" href="{% static 'css/feedback.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-title">Feedback</div>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h1>We Value Your Feedback</h1>
+            <p>Please find the feedback shared by our users below.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Feedback</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   {% for i in obj %}
+                    <tr>
+                        <td>{{i.USER.username}} </td>
+                        <td>{{i.feedback}} </td>
+                        <td>{{i.date}}</td>
+                    </tr>
+                    {% endfor %}
+                  
+                    <tr>
+                        <td colspan="2">No feedback available.</td>
+                    </tr>
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+

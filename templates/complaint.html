@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Management</title>
+    <link rel="stylesheet" href="{% static 'css/complaint.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-title">Complaints</div>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h1>User Complaints</h1>
+            <p>Below is a list of complaints submitted by users. Admins can reply to these complaints.</p>
+            <div class="tables-container">
+                <!-- Complaints Table -->
+                <h2>Complaints</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Complaint ID</th>
+                            <th>Username</th>
+                            <th>Complaint</th>
+                            <th>Date</th>
+                            <th>Reply</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for complaint in complaints %}
+                        <tr>
+                            <td>{{complaint.id}} </td>
+                            <td>{{ complaint.USER.username}} </td>
+                            <td>{{ complaint.complaint}} </td>
+                            <td>{{complaint.date}}</td>
+                            <td>{{complaint.reply}}</td>
+                            <td><a href="/addreply/{{complaint.id}}"><button>reply</button></a></td>
+                        </tr>
+                        {% endfor %}
+                       
+                        <tr>
+                            <td colspan="3">No complaints available.</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

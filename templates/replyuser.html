@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/adduser.css' %}">
+ 
+</head>
+<body>
+    <div class="class">
+        <form method="post" action="/addreply/{{obj.id}}">
+            {% csrf_token %}
+                <center><h1><font color="navy" size="10px">ADD REPLY</font></h1></center><br>
+            <label for="user name">username</label>
+            <input type="text" placeholder="" name="username" value="{{obj.USER.username}}"><br>
+
+            <label for="complaint">complaint</label>
+            <input type="text" placeholder="" name="username" value="{{obj.complaint}}"><br>
+            <input type="text" placeholder="REPLY" name="reply"><br><br>
+            <input type="hidden" name="usertype"><br>
+            <input type="submit" value="REPLY" id="reply">
+
+        </form>
+    </div>
+    
+</body>
+</html>

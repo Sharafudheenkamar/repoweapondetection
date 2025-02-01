@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="manuser.css">
+</head>
+<body><div>
+<div class="mu"><font size="4px" font color="white"><h1>MANAGE USERS</h1></font>
+<a href="/adduser/"><font color="white"><input type="button" value="ADD"></font> </a></div>
+<div class="table">
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse:separate;
+        }
+        </style>
+    <table border="1" style="width:60%" >
+        <tr>
+            <th>USER</th>
+            <th>PHONE NUMBER</th>
+            <th>PASSWORD</th>
+            <th>ID</th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for i in obj %}
+        <tr>
+            <td>{{i.username}}</td>
+            <td>{{i.phonenumber}}</td>
+            <td>{{i.password}}</td>
+            <td>{{i.email}}</td>
+            <td><a href="/Edituser/{{i.id}}">Edit</a></td>
+            <td><a href="/Deleteuser/{{i.id}}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</div>
+</body>
+</html>
